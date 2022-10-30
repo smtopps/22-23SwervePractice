@@ -4,14 +4,26 @@
 
 package frc.robot;
 
+import org.photonvision.PhotonCamera;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Auto.TestPath;
 import frc.robot.commands.ChangeMaxSpeed;
-import frc.robot.commands.DriveWithJoysticks2;
-import frc.robot.commands.ZeroGyro;
-import frc.robot.subsystems.PigeonSubsystemTwo;
+import frc.robot.commands.DriveToLoadingStation;
+import frc.robot.commands.DriveWithJoysticks;
+import frc.robot.commands.LockDrive;
+import frc.robot.commands.ToggleFieldRelative;
+import frc.robot.commands.SetPose;
+import frc.robot.subsystems.Pigeon2Subsystem;
+import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.SwerveSubsystem;
 
 /**
@@ -22,22 +34,34 @@ import frc.robot.subsystems.SwerveSubsystem;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
-  private final PigeonSubsystemTwo pigeonSubsystemTwo = new PigeonSubsystemTwo();
-
-  public static double maxSpeed = 0.375;
-
+  private final PhotonCamera photonCamera = new PhotonCamera("gloworm");
+  public static double maxSpeed = 0.5;
+  public static boolean fieldRelative = true;
   private final XboxController driverController = new XboxController(Constants.DRIVER_CONTROLLER);
+
+  private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  private final Pigeon2Subsystem pigeon2Subsystem = new Pigeon2Subsystem();
+  private final PoseEstimator poseEstimator = new PoseEstimator(photonCamera, swerveSubsystem, pigeon2Subsystem);
+
+  //Auto Stuff
+  private final TestPath testPath = new TestPath(swerveSubsystem, poseEstimator);
+  SendableChooser<Command> chooser = new SendableChooser<>();
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    swerveSubsystem.setDefaultCommand(new DriveWithJoysticks2(
-      swerveSubsystem, 
-      pigeonSubsystemTwo,
-      () -> -driverController.getLeftX(), 
+    swerveSubsystem.setDefaultCommand(new DriveWithJoysticks(
+      swerveSubsystem,
+      poseEstimator,
+      () -> -driverController.getLeftX(),
       () -> -driverController.getLeftY(),
-      () -> -driverController.getRightX()));
+      () -> -driverController.getRightX(),
+      () -> fieldRelative,
+      () -> maxSpeed));
     // Configure the button bindings
     configureButtonBindings();
+
+    chooser.setDefaultOption("Triangle Path", testPath);
+    SmartDashboard.putData(chooser);
   }
 
   /**
@@ -47,8 +71,12 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(driverController, 8).whenPressed(new ZeroGyro(pigeonSubsystemTwo));
+    new JoystickButton(driverController, 8).whenPressed(new SetPose(poseEstimator, new Pose2d(0.0, 0.0, new Rotation2d(0.0))));
     new JoystickButton(driverController, 6).whenHeld(new ChangeMaxSpeed(0.75));
+    new JoystickButton(driverController, 5).whenHeld(new ChangeMaxSpeed(0.25));
+    new JoystickButton(driverController, 3).whenPressed(new ToggleFieldRelative());
+    new Button(driverController::getAButton).whenHeld(new LockDrive(swerveSubsystem));
+    new Button(driverController::getYButton).whenHeld(new DriveToLoadingStation(swerveSubsystem, poseEstimator));
   }
 
   /**
@@ -58,6 +86,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    return chooser.getSelected();
   }
 }

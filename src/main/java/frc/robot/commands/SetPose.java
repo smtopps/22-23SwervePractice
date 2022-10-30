@@ -2,28 +2,27 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Auto;
+package frc.robot.commands;
 
-import com.pathplanner.lib.PathPlannerTrajectory;
-
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.PoseEstimator;
 
-public class SetOdometry extends CommandBase {
-  private final SwerveSubsystem swerveSubsystem;
-  PathPlannerTrajectory trajectory;
-  /** Creates a new SetOdometry. */
-  public SetOdometry(SwerveSubsystem swerveSubsystem, PathPlannerTrajectory trajectory) {
-    this.swerveSubsystem = swerveSubsystem;
-    this.trajectory = trajectory;
+public class SetPose extends CommandBase {
+  private final PoseEstimator poseEstimator;
+  private final Pose2d pose2d;
+  /** Creates a new SetPose. */
+  public SetPose(PoseEstimator poseEstimator, Pose2d pose2d) {
+    this.poseEstimator = poseEstimator;
+    this.pose2d = pose2d;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(swerveSubsystem);
+    addRequirements(poseEstimator);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    swerveSubsystem.setOdometry(trajectory);
+    poseEstimator.setPose(pose2d);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

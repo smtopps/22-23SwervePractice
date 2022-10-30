@@ -11,11 +11,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class PigeonSubsystemTwo extends SubsystemBase {
+public class Pigeon2Subsystem extends SubsystemBase {
   /** Creates a new PigeonSubsystemTwo. */
-  private final static Pigeon2 pigeon2 = new Pigeon2(Constants.DRIVETRAIN_PIGEON_ID);
+  private final Pigeon2 pigeon2 = new Pigeon2(Constants.DRIVETRAIN_PIGEON_ID);
   
-  public PigeonSubsystemTwo() {
+  public Pigeon2Subsystem() {
     pigeon2.configMountPose(AxisDirection.PositiveY, AxisDirection.PositiveZ);
   }
 
@@ -32,7 +32,7 @@ public class PigeonSubsystemTwo extends SubsystemBase {
     return Rotation2d.fromDegrees(pigeon2.getYaw());
   }
 
-  public static Rotation2d getGyroscopeRotation() {
+  public Rotation2d getGyroscopeRotation() {
     return Rotation2d.fromDegrees(pigeon2.getYaw());
   }
 }

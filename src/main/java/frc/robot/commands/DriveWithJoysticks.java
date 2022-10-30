@@ -4,29 +4,37 @@
 
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class DriveWithJoysticks extends CommandBase {
   private final SwerveSubsystem swerveSubsystem;
+  private final PoseEstimator poseEstimator;
 
   private final DoubleSupplier translationX;
   private final DoubleSupplier translationY;
   private final DoubleSupplier rotation;
+  private final BooleanSupplier relative;
+  private final DoubleSupplier maxSpeed;
 
   private final SlewRateLimiter xLimiter, yLimiter, turnLimiter;
 
   /** Creates a new DriveWithJoysticks. */
-  public DriveWithJoysticks(SwerveSubsystem swerveSubsystem, DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier rotation) {
+  public DriveWithJoysticks(SwerveSubsystem swerveSubsystem, PoseEstimator poseEstimator, DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier rotation, BooleanSupplier relative, DoubleSupplier maxSpeed) {
     this.swerveSubsystem = swerveSubsystem;
+    this.poseEstimator = poseEstimator;
     this.translationX = translationX;
     this.translationY = translationY;
     this.rotation = rotation;
+    this.relative = relative;
+    this.maxSpeed = maxSpeed;
     this.xLimiter = new SlewRateLimiter(1.0);
     this.yLimiter = new SlewRateLimiter(1.0);
     this.turnLimiter = new SlewRateLimiter(1.0);
@@ -40,11 +48,18 @@ public class DriveWithJoysticks extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    swerveSubsystem.drive(
-      new ChassisSpeeds(
-        modifyAxis(translationY.getAsDouble(), 0.25, yLimiter) * swerveSubsystem.maxVelocityMetersPerSecond,
-        modifyAxis(translationX.getAsDouble(), 0.25, xLimiter) * swerveSubsystem.maxVelocityMetersPerSecond,
-        modifyAxis(rotation.getAsDouble(), 0.25, turnLimiter) * swerveSubsystem.maxAngularVelocityRadiansPerSecond));
+    if(relative.getAsBoolean()) {
+      swerveSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
+      modifyAxis(translationY.getAsDouble(), maxSpeed.getAsDouble(), yLimiter) * swerveSubsystem.maxVelocityMetersPerSecond,
+      modifyAxis(translationX.getAsDouble(), maxSpeed.getAsDouble(), xLimiter) * swerveSubsystem.maxVelocityMetersPerSecond,
+      modifyAxis(rotation.getAsDouble(), maxSpeed.getAsDouble(), turnLimiter) * swerveSubsystem.maxAngularVelocityRadiansPerSecond,
+      poseEstimator.getPoseRotation()));
+    } else {
+      swerveSubsystem.drive(new ChassisSpeeds(
+        modifyAxis(translationY.getAsDouble(), maxSpeed.getAsDouble(), yLimiter) * swerveSubsystem.maxVelocityMetersPerSecond,
+        modifyAxis(translationX.getAsDouble(), maxSpeed.getAsDouble(), xLimiter) * swerveSubsystem.maxVelocityMetersPerSecond,
+        modifyAxis(rotation.getAsDouble(), maxSpeed.getAsDouble(), turnLimiter) * swerveSubsystem.maxAngularVelocityRadiansPerSecond));
+    }
   }
 
   // Called once the command ends or is interrupted.

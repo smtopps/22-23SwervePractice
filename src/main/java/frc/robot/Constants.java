@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -21,42 +20,33 @@ public final class Constants {
     public static final int DRIVETRAIN_PIGEON_ID = 2; // Pigeon ID
 
     public static final class SwerveConstants {
-        public static final double DRIVETRAIN_TRACKWIDTH_METERS = Units.inchesToMeters(15.5);
-        public static final double DRIVETRAIN_WHEELBASE_METERS = Units.inchesToMeters(17.5);
+        public static final double TRACKWIDTH_METERS = Units.inchesToMeters(15.5);
+        public static final double WHEELBASE_METERS = Units.inchesToMeters(17.5);
 
-        public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 16; // Front left module drive motor ID
-        public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 17; // Front left module steer motor ID
-        public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 18; // Front left steer encoder ID
-        public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(175.51); // Front left steer offset
+        public static final int FRONT_LEFT_DRIVE_MOTOR = 16; // Front left module drive motor ID
+        public static final int FRONT_LEFT_STEER_MOTOR = 17; // Front left module steer motor ID
+        public static final int FRONT_LEFT_STEER_ENCODER = 18; // Front left steer encoder ID
+        public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(175.51); // Front left steer offset
 
-        public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 10; // Front right drive motor ID
-        public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 11; // Front right steer motor ID
-        public static final int FRONT_RIGHT_MODULE_STEER_ENCODER =12; // Front right steer encoder ID
-        public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(94.83); // Front right steer offset
+        public static final int FRONT_RIGHT_DRIVE_MOTOR = 10; // Front right drive motor ID
+        public static final int FRONT_RIGHT_STEER_MOTOR = 11; // Front right steer motor ID
+        public static final int FRONT_RIGHT_STEER_ENCODER =12; // Front right steer encoder ID
+        public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(94.83); // Front right steer offset
 
-        public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 19; // Back left drive motor ID
-        public static final int BACK_LEFT_MODULE_STEER_MOTOR = 20; // Back left steer motor ID
-        public static final int BACK_LEFT_MODULE_STEER_ENCODER = 21; // Back left steer encoder ID
-        public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(219.11); // Back left steer offset
+        public static final int BACK_LEFT_DRIVE_MOTOR = 19; // Back left drive motor ID
+        public static final int BACK_LEFT_STEER_MOTOR = 20; // Back left steer motor ID
+        public static final int BACK_LEFT_STEER_ENCODER = 21; // Back left steer encoder ID
+        public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(219.11); // Back left steer offset
 
-        public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 14; // Back right drive motor ID
-        public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 13; // Back right steer motor ID
-        public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 15; // Back right steer encoder ID
-        public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(338.28); // Back right steer offset
+        public static final int BACK_RIGHT_DRIVE_MOTOR = 14; // Back right drive motor ID
+        public static final int BACK_RIGHT_STEER_MOTOR = 13; // Back right steer motor ID
+        public static final int BACK_RIGHT_STEER_ENCODER = 15; // Back right steer encoder ID
+        public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(338.28); // Back right steer offset
     }
 
     public static final class AutoConstants {
-        public static final double kMaxSpeedMetersPerSecond = 2;
-        public static final double kMaxAngularSpeedRadiansPerSecond = 2;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 2;
-        public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI / 4;
         public static final double kPXController = 1.5;
         public static final double kPYController = 1.5;
         public static final double kPThetaController = 3;
-
-        public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
-                new TrapezoidProfile.Constraints(
-                        kMaxAngularSpeedRadiansPerSecond,
-                        kMaxAngularAccelerationRadiansPerSecondSquared);
     }
 }

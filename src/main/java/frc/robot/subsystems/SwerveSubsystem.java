@@ -8,27 +8,21 @@ import java.io.IOException;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
@@ -40,18 +34,13 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public final double maxVelocityMetersPerSecond = 6380.0 / 60.0 * SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
 
-  public final double maxAngularVelocityRadiansPerSecond = maxVelocityMetersPerSecond / Math.hypot(SwerveConstants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0 , SwerveConstants.DRIVETRAIN_WHEELBASE_METERS / 2.0);
+  public final double maxAngularVelocityRadiansPerSecond = maxVelocityMetersPerSecond / Math.hypot(SwerveConstants.TRACKWIDTH_METERS / 2.0, SwerveConstants.WHEELBASE_METERS / 2.0);
 
-  private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-    //Front Left
-    new Translation2d(SwerveConstants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, SwerveConstants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-    //Front Right
-    new Translation2d(SwerveConstants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -SwerveConstants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-    //Back Left
-    new Translation2d(-SwerveConstants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, SwerveConstants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-    //Back Right
-    new Translation2d(-SwerveConstants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -SwerveConstants.DRIVETRAIN_WHEELBASE_METERS / 2.0)
-  );
+  public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+    new Translation2d(SwerveConstants.TRACKWIDTH_METERS / 2.0, SwerveConstants.WHEELBASE_METERS / 2.0), // Front Left
+    new Translation2d(SwerveConstants.TRACKWIDTH_METERS / 2.0, -SwerveConstants.WHEELBASE_METERS / 2.0), // Front Right
+    new Translation2d(-SwerveConstants.TRACKWIDTH_METERS / 2.0, SwerveConstants.WHEELBASE_METERS / 2.0), // Back Left
+    new Translation2d(-SwerveConstants.TRACKWIDTH_METERS / 2.0, -SwerveConstants.WHEELBASE_METERS / 2.0)); // Back Right
 
   private final SwerveModule frontLeftModule;
   private final SwerveModule frontRightModule;
@@ -60,14 +49,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   private PIDController xController;
   private PIDController yController;
-  private ProfiledPIDController thetaController;
-
-  private final Field2d field2d = new Field2d();
-
-  private final SwerveDriveOdometry odometry = new SwerveDriveOdometry(
-    kinematics, 
-    PigeonSubsystemTwo.getGyroscopeRotation(), 
-    new Pose2d(0, 0, new Rotation2d(0)));
+  private PIDController thetaController;
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
@@ -76,41 +58,38 @@ public class SwerveSubsystem extends SubsystemBase {
     frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
       swerveTab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0),
       Mk4SwerveModuleHelper.GearRatio.L2,
-      SwerveConstants.FRONT_LEFT_MODULE_DRIVE_MOTOR, 
-      SwerveConstants.FRONT_LEFT_MODULE_STEER_MOTOR,
-      SwerveConstants.FRONT_LEFT_MODULE_STEER_ENCODER,
-      SwerveConstants.FRONT_LEFT_MODULE_STEER_OFFSET);
+      SwerveConstants.FRONT_LEFT_DRIVE_MOTOR,
+      SwerveConstants.FRONT_LEFT_STEER_MOTOR,
+      SwerveConstants.FRONT_LEFT_STEER_ENCODER,
+      SwerveConstants.FRONT_LEFT_STEER_OFFSET);
 
     frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
       swerveTab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0), 
       Mk4SwerveModuleHelper.GearRatio.L2, 
-      SwerveConstants.FRONT_RIGHT_MODULE_DRIVE_MOTOR, 
-      SwerveConstants.FRONT_RIGHT_MODULE_STEER_MOTOR, 
-      SwerveConstants.FRONT_RIGHT_MODULE_STEER_ENCODER, 
-      SwerveConstants.FRONT_RIGHT_MODULE_STEER_OFFSET);
+      SwerveConstants.FRONT_RIGHT_DRIVE_MOTOR, 
+      SwerveConstants.FRONT_RIGHT_STEER_MOTOR, 
+      SwerveConstants.FRONT_RIGHT_STEER_ENCODER, 
+      SwerveConstants.FRONT_RIGHT_STEER_OFFSET);
 
     backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
       swerveTab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0), 
-      Mk4SwerveModuleHelper.GearRatio.L2,
-      SwerveConstants.BACK_LEFT_MODULE_DRIVE_MOTOR,
-      SwerveConstants.BACK_LEFT_MODULE_STEER_MOTOR,
-      SwerveConstants.BACK_LEFT_MODULE_STEER_ENCODER,
-      SwerveConstants.BACK_LEFT_MODULE_STEER_OFFSET);
+      Mk4SwerveModuleHelper.GearRatio.L2, 
+      SwerveConstants.BACK_LEFT_DRIVE_MOTOR, 
+      SwerveConstants.BACK_LEFT_STEER_MOTOR, 
+      SwerveConstants.BACK_LEFT_STEER_ENCODER, 
+      SwerveConstants.BACK_LEFT_STEER_OFFSET);
 
     backRightModule = Mk4SwerveModuleHelper.createFalcon500(
       swerveTab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(6, 0), 
       Mk4SwerveModuleHelper.GearRatio.L2, 
-      SwerveConstants.BACK_RIGHT_MODULE_DRIVE_MOTOR, 
-      SwerveConstants.BACK_RIGHT_MODULE_STEER_MOTOR, 
-      SwerveConstants.BACK_RIGHT_MODULE_STEER_ENCODER, 
-      SwerveConstants.BACK_RIGHT_MODULE_STEER_OFFSET);
+      SwerveConstants.BACK_RIGHT_DRIVE_MOTOR, 
+      SwerveConstants.BACK_RIGHT_STEER_MOTOR,
+      SwerveConstants.BACK_RIGHT_STEER_ENCODER, 
+      SwerveConstants.BACK_RIGHT_STEER_OFFSET);
   }
 
   @Override
   public void periodic() {
-    odometry.update(PigeonSubsystemTwo.getGyroscopeRotation(), getFLState(), getFRState(), getBLState(), getBRState()); //path planning
-    field2d.setRobotPose(odometry.getPoseMeters());
-    SmartDashboard.putData("Field", field2d);
     // This method will be called once per scheduler run
   }
 
@@ -134,6 +113,13 @@ public class SwerveSubsystem extends SubsystemBase {
     backRightModule.set(0, 0);
   }
 
+  public void lock() {
+    frontLeftModule.set(0, 45);
+    frontRightModule.set(0, -45);
+    backLeftModule.set(0, -45);
+    backRightModule.set(0, 45);
+  }
+
   public SwerveModuleState getFLState() {
     return new SwerveModuleState(frontLeftModule.getDriveVelocity(), new Rotation2d(frontLeftModule.getSteerAngle()));
   }
@@ -150,15 +136,6 @@ public class SwerveSubsystem extends SubsystemBase {
     return new SwerveModuleState(backRightModule.getDriveVelocity(), new Rotation2d(backRightModule.getSteerAngle()));
   }
 
-  public Pose2d getPose() { // path planning
-    return odometry.getPoseMeters();
-  }
-
-  public void resetOdometry(Pose2d pose2d, double rotation) { // path planning
-    //Pigeon2Subsystem.setGyroscopeRotation(rotation);
-    odometry.resetPosition(pose2d, PigeonSubsystemTwo.getGyroscopeRotation());
-  }
-
   public PathPlannerTrajectory loadTrajectoryFromFile(String filename, double maxVel, double maxAccel) {
     try {
       return loadPathPlannerTrajectory(filename, maxVel, maxAccel);
@@ -172,15 +149,15 @@ public class SwerveSubsystem extends SubsystemBase {
     return PathPlanner.loadPath(trajectoryName, maxVel, maxAccel);
   }
 
-  public Command createCommandForTrajectory(PathPlannerTrajectory trajectory, Boolean initPose) {
+  public Command createCommandForTrajectory(PathPlannerTrajectory trajectory) {
     xController = new PIDController(AutoConstants.kPXController, 0, 0);
     yController = new PIDController(AutoConstants.kPYController, 0, 0);
-    thetaController = new ProfiledPIDController(AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints); //Kp value, Ki=0, Kd=0, constraints value
+    thetaController = new PIDController(AutoConstants.kPThetaController, 0, 0); //Kp value, Ki=0, Kd=0
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     PPSwerveControllerCommand swerveControllerCommand = new PPSwerveControllerCommand(
       trajectory,
-      this::getPose,
+      () -> PoseEstimator.getCurrentPose(),
       kinematics,
       xController,
       yController,
@@ -191,13 +168,16 @@ public class SwerveSubsystem extends SubsystemBase {
     return swerveControllerCommand.andThen(() -> stop());
   }
 
-  public void setOdometry(PathPlannerTrajectory trajectory) {
-    PathPlannerState initialState = trajectory.getInitialState();
-    Pose2d startingPose = new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation);
-    resetOdometry(startingPose, initialState.holonomicRotation.getDegrees());
+  public double getCurrentChassisSpeeds() {
+    ChassisSpeeds currentSpeeds = kinematics.toChassisSpeeds(this.getFLState(), this.getFRState(), this.getBLState(), this.getBRState());
+    double linearVelocity = Math.sqrt((currentSpeeds.vxMetersPerSecond * currentSpeeds.vxMetersPerSecond) + (currentSpeeds.vyMetersPerSecond * currentSpeeds.vyMetersPerSecond));
+    return linearVelocity;
   }
 
-  public Rotation2d getOdometryRotation2d() {
-    return odometry.getPoseMeters().getRotation();
+  public Rotation2d getCurrentChassisHeading() {
+    ChassisSpeeds currentSpeeds = kinematics.toChassisSpeeds(this.getFLState(), this.getFRState(), this.getBLState(), this.getBRState());
+    Rotation2d robotHeading = new Rotation2d(Math.atan2(currentSpeeds.vyMetersPerSecond, currentSpeeds.vxMetersPerSecond));
+    Rotation2d currentHeading = robotHeading.plus(PoseEstimator.getCurrentPose().getRotation());
+    return currentHeading;
   }
 }
