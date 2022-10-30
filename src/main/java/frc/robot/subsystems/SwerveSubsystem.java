@@ -163,8 +163,7 @@ public class SwerveSubsystem extends SubsystemBase {
       yController,
       thetaController,
       this::setModuleStates,
-      this
-    );
+      this);
     return swerveControllerCommand.andThen(() -> stop());
   }
 

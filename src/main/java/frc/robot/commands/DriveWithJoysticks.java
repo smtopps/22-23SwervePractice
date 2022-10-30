@@ -35,9 +35,9 @@ public class DriveWithJoysticks extends CommandBase {
     this.rotation = rotation;
     this.relative = relative;
     this.maxSpeed = maxSpeed;
-    this.xLimiter = new SlewRateLimiter(1.0);
-    this.yLimiter = new SlewRateLimiter(1.0);
-    this.turnLimiter = new SlewRateLimiter(1.0);
+    this.xLimiter = new SlewRateLimiter(2.0);
+    this.yLimiter = new SlewRateLimiter(2.0);
+    this.turnLimiter = new SlewRateLimiter(2.0);
     addRequirements(swerveSubsystem);
   }
 

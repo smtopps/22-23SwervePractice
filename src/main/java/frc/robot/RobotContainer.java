@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+
 import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,6 +20,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Auto.TestPath;
 import frc.robot.commands.ChangeMaxSpeed;
 import frc.robot.commands.DriveToLoadingStation;
+import frc.robot.commands.DriveToLoadingStationGroup;
+import frc.robot.commands.DriveToLoadingStationGroup2;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.LockDrive;
 import frc.robot.commands.ToggleFieldRelative;
@@ -46,6 +50,9 @@ public class RobotContainer {
   //Auto Stuff
   private final TestPath testPath = new TestPath(swerveSubsystem, poseEstimator);
   SendableChooser<Command> chooser = new SendableChooser<>();
+
+  //On The Fly Trajectory Stuff
+  public static PathPlannerTrajectory trajectory;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -77,6 +84,8 @@ public class RobotContainer {
     new JoystickButton(driverController, 3).whenPressed(new ToggleFieldRelative());
     new Button(driverController::getAButton).whenHeld(new LockDrive(swerveSubsystem));
     new Button(driverController::getYButton).whenHeld(new DriveToLoadingStation(swerveSubsystem, poseEstimator));
+    //new Button(driverController::getYButton).whenHeld(new DriveToLoadingStationGroup(swerveSubsystem, poseEstimator));
+    //new Button(driverController::getYButton).whenHeld(new DriveToLoadingStationGroup2(swerveSubsystem, poseEstimator));
   }
 
   /**
