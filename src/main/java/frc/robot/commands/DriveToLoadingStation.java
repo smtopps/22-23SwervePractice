@@ -29,7 +29,7 @@ public class DriveToLoadingStation extends CommandBase {
     this.swerveSubsystem = swerveSubsystem;
     this.poseEstimator = poseEstimator;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(swerveSubsystem);
+    //addRequirements(swerveSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -51,12 +51,13 @@ public class DriveToLoadingStation extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    swerveSubsystem.stop();
+    //swerveSubsystem.stop();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    //return false;
+    return true;
   }
 }

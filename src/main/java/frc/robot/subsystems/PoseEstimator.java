@@ -93,6 +93,7 @@ public class PoseEstimator extends SubsystemBase {
 
     poseEstimator.updateWithTime(Timer.getFPGATimestamp(), pigeon2Subsystem.getGyroRotation(), swerveSubsystem.getFLState(), swerveSubsystem.getFRState(), swerveSubsystem.getBLState(), swerveSubsystem.getBRState());
     field2d.setRobotPose(poseEstimator.getEstimatedPosition());
+    SmartDashboard.putString("Pose", poseEstimator.getEstimatedPosition().toString());
     // This method will be called once per scheduler run
   }
 

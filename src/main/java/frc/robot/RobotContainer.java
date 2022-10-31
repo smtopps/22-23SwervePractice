@@ -15,13 +15,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Auto.TestPath;
 import frc.robot.commands.ChangeMaxSpeed;
 import frc.robot.commands.DriveToLoadingStation;
-import frc.robot.commands.DriveToLoadingStationGroup;
-import frc.robot.commands.DriveToLoadingStationGroup2;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.LockDrive;
 import frc.robot.commands.ToggleFieldRelative;
@@ -83,9 +82,13 @@ public class RobotContainer {
     new JoystickButton(driverController, 5).whenHeld(new ChangeMaxSpeed(0.25));
     new JoystickButton(driverController, 3).whenPressed(new ToggleFieldRelative());
     new Button(driverController::getAButton).whenHeld(new LockDrive(swerveSubsystem));
-    new Button(driverController::getYButton).whenHeld(new DriveToLoadingStation(swerveSubsystem, poseEstimator));
-    //new Button(driverController::getYButton).whenHeld(new DriveToLoadingStationGroup(swerveSubsystem, poseEstimator));
-    //new Button(driverController::getYButton).whenHeld(new DriveToLoadingStationGroup2(swerveSubsystem, poseEstimator));
+    new JoystickButton(driverController, 4)
+      .whenActive(new DriveToLoadingStation(swerveSubsystem, poseEstimator))
+      .whenInactive(new InstantCommand(() -> {
+        if(swerveSubsystem.getCurrentCommand() != null){
+          swerveSubsystem.getCurrentCommand().cancel();
+        }
+      }));
   }
 
   /**

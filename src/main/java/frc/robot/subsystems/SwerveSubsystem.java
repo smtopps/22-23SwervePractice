@@ -20,9 +20,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
@@ -53,10 +50,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
-    ShuffleboardTab swerveTab = Shuffleboard.getTab("Swerve Drive");
+    //ShuffleboardTab swerveTab = Shuffleboard.getTab("Swerve Drive");
 
     frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
-      swerveTab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0),
+      //swerveTab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0),
       Mk4SwerveModuleHelper.GearRatio.L2,
       SwerveConstants.FRONT_LEFT_DRIVE_MOTOR,
       SwerveConstants.FRONT_LEFT_STEER_MOTOR,
@@ -64,7 +61,7 @@ public class SwerveSubsystem extends SubsystemBase {
       SwerveConstants.FRONT_LEFT_STEER_OFFSET);
 
     frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
-      swerveTab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0), 
+      //swerveTab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0), 
       Mk4SwerveModuleHelper.GearRatio.L2, 
       SwerveConstants.FRONT_RIGHT_DRIVE_MOTOR, 
       SwerveConstants.FRONT_RIGHT_STEER_MOTOR, 
@@ -72,7 +69,7 @@ public class SwerveSubsystem extends SubsystemBase {
       SwerveConstants.FRONT_RIGHT_STEER_OFFSET);
 
     backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
-      swerveTab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0), 
+      //swerveTab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0), 
       Mk4SwerveModuleHelper.GearRatio.L2, 
       SwerveConstants.BACK_LEFT_DRIVE_MOTOR, 
       SwerveConstants.BACK_LEFT_STEER_MOTOR, 
@@ -80,7 +77,7 @@ public class SwerveSubsystem extends SubsystemBase {
       SwerveConstants.BACK_LEFT_STEER_OFFSET);
 
     backRightModule = Mk4SwerveModuleHelper.createFalcon500(
-      swerveTab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(6, 0), 
+      //swerveTab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4).withPosition(6, 0), 
       Mk4SwerveModuleHelper.GearRatio.L2, 
       SwerveConstants.BACK_RIGHT_DRIVE_MOTOR, 
       SwerveConstants.BACK_RIGHT_STEER_MOTOR,
