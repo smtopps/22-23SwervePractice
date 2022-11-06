@@ -15,10 +15,12 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -34,12 +36,14 @@ public class PoseEstimator extends SubsystemBase {
   private final Pigeon2Subsystem pigeon2Subsystem;
 
   // Physical location of the camera on the robot, relative to the center of the robot.
-  private final Transform2d cameraToRobot = new Transform2d(new Translation2d(Units.inchesToMeters(-12.0), 0.0), new Rotation2d(0.0));
+  private final Transform3d cameraToRobot = new Transform3d(
+    new Translation3d(Units.inchesToMeters(-12.0), 0.0, Units.inchesToMeters(-5.25)),
+    new Rotation3d());
 
   // Ordered list of target poses by ID (WPILib is adding some functionality for this)
-  private final List<Pose2d> targetPoses = Collections.unmodifiableList(List.of(
-    new Pose2d(Units.feetToMeters(54.0), Units.feetToMeters(13.5), Rotation2d.fromDegrees(180.0)),
-    new Pose2d(Units.feetToMeters(0.0), Units.feetToMeters(13.5), Rotation2d.fromDegrees(0.0))));
+  private final List<Pose3d> targetPoses = Collections.unmodifiableList(List.of(
+    new Pose3d(Units.feetToMeters(54.0), Units.feetToMeters(13.5), Units.inchesToMeters(6.0), new Rotation3d(0.0, 0.0, Units.degreesToRadians(180.0))),
+    new Pose3d(Units.feetToMeters(0.0), Units.feetToMeters(13.5), Units.inchesToMeters(6.0), new Rotation3d(0.0, 0.0, 0.0))));
 
   // Kalman Filter Configuration. These can be "tuned-to-taste" based on how much you trust your various sensors. 
   // Smaller numbers will cause the filter to "trust" the estimate from that particular component more than the others. 
@@ -51,7 +55,7 @@ public class PoseEstimator extends SubsystemBase {
   
   private final Field2d field2d = new Field2d();
   
-  /** Creates a new PoseEstimator. */
+  /** Creates a new PoseEstimator3d. */
   public PoseEstimator(PhotonCamera photonCamera, SwerveSubsystem swerveSubsystem, Pigeon2Subsystem pigeon2Subsystem) {
     this.photonCamera = photonCamera;
     this.swerveSubsystem = swerveSubsystem;
@@ -79,15 +83,13 @@ public class PoseEstimator extends SubsystemBase {
       double imageCaptureTime = Timer.getFPGATimestamp() - (res.getLatencyMillis() / 1000.0);
       PhotonTrackedTarget bestTarget = res.getBestTarget();
       int fiducialId = bestTarget.getFiducialId();
-      if(fiducialId >= 0 && fiducialId < targetPoses.size() && bestTarget.getPoseAmbiguity() < 0.02) {
-        Pose2d targetPose = targetPoses.get(fiducialId);
+      if(fiducialId >= 0 && fiducialId < targetPoses.size() && bestTarget.getPoseAmbiguity() < 0.2) {
+        Pose3d targetPose = targetPoses.get(fiducialId);
         Transform3d camToTargetTrans = bestTarget.getCameraToTarget();
-        Transform2d transform = new Transform2d(
-          camToTargetTrans.getTranslation().toTranslation2d(), 
-          camToTargetTrans.getRotation().toRotation2d().minus(Rotation2d.fromDegrees(90)));
-        Pose2d camPose = targetPose.transformBy(transform.inverse());
-        Pose2d robotPose = camPose.transformBy(cameraToRobot);
-        poseEstimator.addVisionMeasurement(robotPose, imageCaptureTime);
+        Pose3d camPose = targetPose.transformBy(camToTargetTrans.inverse());
+        Pose3d robotPose = camPose.transformBy(cameraToRobot);
+        poseEstimator.addVisionMeasurement(robotPose.toPose2d(), imageCaptureTime);
+        SmartDashboard.putString("Pose3d", robotPose.toString());
       }
     }
 

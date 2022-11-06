@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
@@ -21,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.SwerveConstants;
@@ -151,6 +153,8 @@ public class SwerveSubsystem extends SubsystemBase {
     yController = new PIDController(AutoConstants.kPYController, 0, 0);
     thetaController = new PIDController(AutoConstants.kPThetaController, 0, 0); //Kp value, Ki=0, Kd=0
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    HashMap<String, Command> eventMap = new HashMap<>();
+    eventMap.put("marker1", new PrintCommand("Passed marker 1"));
 
     PPSwerveControllerCommand swerveControllerCommand = new PPSwerveControllerCommand(
       trajectory,
@@ -160,6 +164,7 @@ public class SwerveSubsystem extends SubsystemBase {
       yController,
       thetaController,
       this::setModuleStates,
+      eventMap,
       this);
     return swerveControllerCommand.andThen(() -> stop());
   }
