@@ -20,13 +20,13 @@ public class SwerveModule {
   private final TalonFX steerMotor;
   private final CANCoder steerEncoder;
   /** Creates a new SwerveModule. */
-  public SwerveModule(int driveMotorID, int steerMotorID, boolean driveMotorReversed, boolean steerMotorReversed, int steerEncoderID, double steerEncoderOffset, boolean steerEncoderReversed) {
+  public SwerveModule(int driveMotorID, int steerMotorID, int steerEncoderID, double steerEncoderOffset) {
     steerEncoder = new CANCoder(steerEncoderID);
     driveMotor = new TalonFX(driveMotorID);
     steerMotor = new TalonFX(steerMotorID);
 
-    driveMotor.setInverted(driveMotorReversed);
-    steerMotor.setInverted(steerMotorReversed);
+    driveMotor.setInverted(true);
+    steerMotor.setInverted(true);
 
     driveMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 80, 80, 0.0));
     steerMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 20, 20, 0.0));
@@ -34,6 +34,7 @@ public class SwerveModule {
     steerMotor.setNeutralMode(NeutralMode.Brake);
 
     steerMotor.configSelectedFeedbackCoefficient((1.0/2048.0*360.0) * ((15.0/32.0)*(10.0/60.0)));
+    steerMotor.configFeedbackNotContinuous(false, 20);
     
     steerMotor.config_kP(0, 0.2);
     steerMotor.config_kI(0, 0.0);
@@ -68,7 +69,7 @@ public class SwerveModule {
     return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getSteeringPosition()));
   }
 
-  public void setDesiredState(SwerveModuleState state) {
+  public void set(SwerveModuleState state) {
     if(Math.abs(state.speedMetersPerSecond) < 0.001) {
       stop();
       return;
@@ -76,6 +77,11 @@ public class SwerveModule {
     state = SwerveModuleState.optimize(state, getState().angle);
     driveMotor.set(ControlMode.PercentOutput, state.speedMetersPerSecond / SwerveConstants.MAX_VELOCITY_METERS_PER_SECOND);
     steerMotor.set(ControlMode.Position, state.angle.getRadians());
+  }
+
+  public void setState(double speed, double angle) {
+    driveMotor.set(ControlMode.PercentOutput, 0.0);
+    steerMotor.set(ControlMode.Position, angle);
   }
 
   public void stop() {
