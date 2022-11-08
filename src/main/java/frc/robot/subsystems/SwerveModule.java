@@ -13,21 +13,14 @@ import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
 
-public class SwerveModule extends SubsystemBase {
-  //private final WPI_TalonFX driveMotor;
+public class SwerveModule {
   private final TalonFX driveMotor;
   private final TalonFX steerMotor;
-
   private final CANCoder steerEncoder;
-  private final boolean steerEncoderReversed;
-  private final double steerEncoderOffset;
   /** Creates a new SwerveModule. */
   public SwerveModule(int driveMotorID, int steerMotorID, boolean driveMotorReversed, boolean steerMotorReversed, int steerEncoderID, double steerEncoderOffset, boolean steerEncoderReversed) {
-    this.steerEncoderOffset = steerEncoderOffset;
-    this.steerEncoderReversed = steerEncoderReversed;
     steerEncoder = new CANCoder(steerEncoderID);
     driveMotor = new TalonFX(driveMotorID);
     steerMotor = new TalonFX(steerMotorID);
@@ -40,8 +33,7 @@ public class SwerveModule extends SubsystemBase {
     driveMotor.setNeutralMode(NeutralMode.Brake);
     steerMotor.setNeutralMode(NeutralMode.Brake);
 
-    steerMotor.configSelectedFeedbackCoefficient(coefficient);
-    steerMotor.configIntegratedSensorOffset(offsetDegrees);
+    steerMotor.configSelectedFeedbackCoefficient((1.0/2048.0*360.0) * ((15.0/32.0)*(10.0/60.0)));
     
     steerMotor.config_kP(0, 0.2);
     steerMotor.config_kI(0, 0.0);
@@ -49,14 +41,7 @@ public class SwerveModule extends SubsystemBase {
     steerMotor.config_kF(0, 0.0);
 
     driveMotor.setSelectedSensorPosition(0.0);
-    steerMotor.setSelectedSensorPosition(steerEncoder.getAbsolutePosition());
-
-    resetEncoders();
-  }
-
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+    steerMotor.setSelectedSensorPosition(steerEncoder.getAbsolutePosition() + steerEncoderOffset);
   }
 
   public double getDrivePosition() {
@@ -77,11 +62,6 @@ public class SwerveModule extends SubsystemBase {
 
   public double getSteerEncoderRad() {
     return Units.degreesToRadians(steerEncoder.getAbsolutePosition());
-  }
-
-  public void resetEncoders() {
-    driveMotor.setSelectedSensorPosition(0.0);
-    steerMotor.setSelectedSensorPosition(getSteerEncoderRad());
   }
 
   public SwerveModuleState getState() {
