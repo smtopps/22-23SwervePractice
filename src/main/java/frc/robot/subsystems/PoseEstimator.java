@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
@@ -25,7 +25,9 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -42,9 +44,12 @@ public class PoseEstimator extends SubsystemBase {
     new Rotation3d());
 
   // Ordered list of target poses by ID (WPILib is adding some functionality for this)
-  private final List<Pose3d> targetPoses = Collections.unmodifiableList(List.of(
-    new Pose3d(Units.feetToMeters(54.0), Units.feetToMeters(13.5), Units.inchesToMeters(6.0), new Rotation3d(0.0, 0.0, Units.degreesToRadians(180.0))),
-    new Pose3d(Units.feetToMeters(0.0), Units.feetToMeters(13.5), Units.inchesToMeters(6.0), new Rotation3d(0.0, 0.0, 0.0))));
+  private final Map<Integer, Pose3d> targetPosesBlue = Collections.unmodifiableMap(Map.of(
+    0, new Pose3d(Units.feetToMeters(54.0), Units.feetToMeters(13.5), Units.inchesToMeters(6.0), new Rotation3d(0.0, 0.0, Units.degreesToRadians(180.0))),
+    1, new Pose3d(Units.feetToMeters(0.0), Units.feetToMeters(13.5), Units.inchesToMeters(6.0), new Rotation3d(0.0, 0.0, 0.0))));
+  private final Map<Integer, Pose3d> targetPosesRed = Collections.unmodifiableMap(Map.of(
+    0, new Pose3d(Units.feetToMeters(0.0), Units.feetToMeters(13.5), Units.inchesToMeters(6.0), new Rotation3d(0.0, 0.0, 0.0)),
+    1, new Pose3d(Units.feetToMeters(54.0), Units.feetToMeters(13.5), Units.inchesToMeters(6.0), new Rotation3d(0.0, 0.0, Units.degreesToRadians(180.0)))));
 
   // Kalman Filter Configuration. These can be "tuned-to-taste" based on how much you trust your various sensors. 
   // Smaller numbers will cause the filter to "trust" the estimate from that particular component more than the others. 
@@ -84,8 +89,15 @@ public class PoseEstimator extends SubsystemBase {
       double imageCaptureTime = Timer.getFPGATimestamp() - (res.getLatencyMillis() / 1000.0);
       PhotonTrackedTarget bestTarget = res.getBestTarget();
       int fiducialId = bestTarget.getFiducialId();
-      if(fiducialId >= 0 && fiducialId < targetPoses.size() && bestTarget.getPoseAmbiguity() < 0.2) {
-        Pose3d targetPose = targetPoses.get(fiducialId);
+      if(DriverStation.getAlliance() == Alliance.Blue && targetPosesBlue.containsKey(fiducialId) && bestTarget.getPoseAmbiguity() < 0.2) {
+        Pose3d targetPose = targetPosesBlue.get(fiducialId);
+        Transform3d camToTargetTrans = bestTarget.getCameraToTarget();
+        Pose3d camPose = targetPose.transformBy(camToTargetTrans.inverse());
+        Pose3d robotPose = camPose.transformBy(cameraToRobot);
+        poseEstimator.addVisionMeasurement(robotPose.toPose2d(), imageCaptureTime);
+        SmartDashboard.putString("Pose3d", robotPose.toString());
+      }else if(targetPosesRed.containsKey(fiducialId) && bestTarget.getPoseAmbiguity() < 0.2) {
+        Pose3d targetPose = targetPosesRed.get(fiducialId);
         Transform3d camToTargetTrans = bestTarget.getCameraToTarget();
         Pose3d camPose = targetPose.transformBy(camToTargetTrans.inverse());
         Pose3d robotPose = camPose.transformBy(cameraToRobot);
