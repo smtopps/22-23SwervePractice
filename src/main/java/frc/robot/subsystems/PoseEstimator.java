@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.SwerveConstants;
 
 public class PoseEstimator extends SubsystemBase {
   private final PhotonCamera photonCamera;
@@ -64,7 +65,7 @@ public class PoseEstimator extends SubsystemBase {
     poseEstimator = new SwerveDrivePoseEstimator(
       pigeon2Subsystem.getGyroRotation(),
       new Pose2d(new Translation2d(0, 0), new Rotation2d(0.0)),
-      swerveSubsystem.kinematics,
+      SwerveConstants.KINEMATICS,
       stateStdDevs,
       localMeasurementStdDevs,
       visionMeasurementStdDevs);

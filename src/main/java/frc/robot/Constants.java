@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -22,6 +24,18 @@ public final class Constants {
     public static final class SwerveConstants {
         public static final double TRACKWIDTH_METERS = Units.inchesToMeters(15.5);
         public static final double WHEELBASE_METERS = Units.inchesToMeters(17.5);
+
+        public static final double MAX_VOLTAGE = 12.0;
+
+        public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 * ((14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)) * 0.10033 * Math.PI;
+
+        public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND / Math.hypot(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0);
+
+        public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
+            new Translation2d(SwerveConstants.TRACKWIDTH_METERS / 2.0, SwerveConstants.WHEELBASE_METERS / 2.0), // Front Left
+            new Translation2d(SwerveConstants.TRACKWIDTH_METERS / 2.0, -SwerveConstants.WHEELBASE_METERS / 2.0), // Front Right
+            new Translation2d(-SwerveConstants.TRACKWIDTH_METERS / 2.0, SwerveConstants.WHEELBASE_METERS / 2.0), // Back Left
+            new Translation2d(-SwerveConstants.TRACKWIDTH_METERS / 2.0, -SwerveConstants.WHEELBASE_METERS / 2.0)); // Back Right
 
         public static final int FRONT_LEFT_DRIVE_MOTOR = 16; // Front left module drive motor ID
         public static final int FRONT_LEFT_STEER_MOTOR = 17; // Front left module steer motor ID

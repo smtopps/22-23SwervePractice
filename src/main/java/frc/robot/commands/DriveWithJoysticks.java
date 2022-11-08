@@ -11,6 +11,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -50,15 +51,15 @@ public class DriveWithJoysticks extends CommandBase {
   public void execute() {
     if(relative.getAsBoolean()) {
       swerveSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-      modifyAxis(translationY.getAsDouble(), maxSpeed.getAsDouble(), yLimiter) * swerveSubsystem.maxVelocityMetersPerSecond,
-      modifyAxis(translationX.getAsDouble(), maxSpeed.getAsDouble(), xLimiter) * swerveSubsystem.maxVelocityMetersPerSecond,
-      modifyAxis(rotation.getAsDouble(), maxSpeed.getAsDouble(), turnLimiter) * swerveSubsystem.maxAngularVelocityRadiansPerSecond,
+      modifyAxis(translationY.getAsDouble(), maxSpeed.getAsDouble(), yLimiter) * SwerveConstants.MAX_VELOCITY_METERS_PER_SECOND,
+      modifyAxis(translationX.getAsDouble(), maxSpeed.getAsDouble(), xLimiter) * SwerveConstants.MAX_VELOCITY_METERS_PER_SECOND,
+      modifyAxis(rotation.getAsDouble(), maxSpeed.getAsDouble(), turnLimiter) * SwerveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
       poseEstimator.getPoseRotation()));
     } else {
       swerveSubsystem.drive(new ChassisSpeeds(
-        modifyAxis(translationY.getAsDouble(), maxSpeed.getAsDouble(), yLimiter) * swerveSubsystem.maxVelocityMetersPerSecond,
-        modifyAxis(translationX.getAsDouble(), maxSpeed.getAsDouble(), xLimiter) * swerveSubsystem.maxVelocityMetersPerSecond,
-        modifyAxis(rotation.getAsDouble(), maxSpeed.getAsDouble(), turnLimiter) * swerveSubsystem.maxAngularVelocityRadiansPerSecond));
+        modifyAxis(translationY.getAsDouble(), maxSpeed.getAsDouble(), yLimiter) * SwerveConstants.MAX_VELOCITY_METERS_PER_SECOND,
+        modifyAxis(translationX.getAsDouble(), maxSpeed.getAsDouble(), xLimiter) * SwerveConstants.MAX_VELOCITY_METERS_PER_SECOND,
+        modifyAxis(rotation.getAsDouble(), maxSpeed.getAsDouble(), turnLimiter) * SwerveConstants.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
     }
   }
 

@@ -11,12 +11,10 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
-import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -28,18 +26,6 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.SwerveConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
-
-  private final double maxVoltage = 12.0;
-
-  public final double maxVelocityMetersPerSecond = 6380.0 / 60.0 * SdsModuleConfigurations.MK4_L2.getDriveReduction() * SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI;
-
-  public final double maxAngularVelocityRadiansPerSecond = maxVelocityMetersPerSecond / Math.hypot(SwerveConstants.TRACKWIDTH_METERS / 2.0, SwerveConstants.WHEELBASE_METERS / 2.0);
-
-  public final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-    new Translation2d(SwerveConstants.TRACKWIDTH_METERS / 2.0, SwerveConstants.WHEELBASE_METERS / 2.0), // Front Left
-    new Translation2d(SwerveConstants.TRACKWIDTH_METERS / 2.0, -SwerveConstants.WHEELBASE_METERS / 2.0), // Front Right
-    new Translation2d(-SwerveConstants.TRACKWIDTH_METERS / 2.0, SwerveConstants.WHEELBASE_METERS / 2.0), // Back Left
-    new Translation2d(-SwerveConstants.TRACKWIDTH_METERS / 2.0, -SwerveConstants.WHEELBASE_METERS / 2.0)); // Back Right
 
   private final SwerveModule frontLeftModule;
   private final SwerveModule frontRightModule;
@@ -93,15 +79,15 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void setModuleStates(SwerveModuleState[] states) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(states, maxVelocityMetersPerSecond);
-    frontLeftModule.set(states[0].speedMetersPerSecond / maxVelocityMetersPerSecond * maxVoltage, states[0].angle.getRadians());
-    frontRightModule.set(states[1].speedMetersPerSecond / maxVelocityMetersPerSecond * maxVoltage, states[1].angle.getRadians());
-    backLeftModule.set(states[2].speedMetersPerSecond / maxVelocityMetersPerSecond * maxVoltage, states[2].angle.getRadians());
-    backRightModule.set(states[3].speedMetersPerSecond / maxVelocityMetersPerSecond * maxVoltage, states[3].angle.getRadians());
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, SwerveConstants.MAX_VELOCITY_METERS_PER_SECOND);
+    frontLeftModule.set(states[0].speedMetersPerSecond / SwerveConstants.MAX_VELOCITY_METERS_PER_SECOND * SwerveConstants.MAX_VOLTAGE, states[0].angle.getRadians());
+    frontRightModule.set(states[1].speedMetersPerSecond / SwerveConstants.MAX_VELOCITY_METERS_PER_SECOND * SwerveConstants.MAX_VOLTAGE, states[1].angle.getRadians());
+    backLeftModule.set(states[2].speedMetersPerSecond / SwerveConstants.MAX_VELOCITY_METERS_PER_SECOND * SwerveConstants.MAX_VOLTAGE, states[2].angle.getRadians());
+    backRightModule.set(states[3].speedMetersPerSecond / SwerveConstants.MAX_VELOCITY_METERS_PER_SECOND * SwerveConstants.MAX_VOLTAGE, states[3].angle.getRadians());
   }
 
   public void drive(ChassisSpeeds chassisSpeeds) {
-    SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds);
+    SwerveModuleState[] states = SwerveConstants.KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(states);
   }
 
@@ -159,7 +145,7 @@ public class SwerveSubsystem extends SubsystemBase {
     PPSwerveControllerCommand swerveControllerCommand = new PPSwerveControllerCommand(
       trajectory,
       () -> PoseEstimator.getCurrentPose(),
-      kinematics,
+      SwerveConstants.KINEMATICS,
       xController,
       yController,
       thetaController,
@@ -170,13 +156,13 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public double getCurrentChassisSpeeds() {
-    ChassisSpeeds currentSpeeds = kinematics.toChassisSpeeds(this.getFLState(), this.getFRState(), this.getBLState(), this.getBRState());
+    ChassisSpeeds currentSpeeds = SwerveConstants.KINEMATICS.toChassisSpeeds(this.getFLState(), this.getFRState(), this.getBLState(), this.getBRState());
     double linearVelocity = Math.sqrt((currentSpeeds.vxMetersPerSecond * currentSpeeds.vxMetersPerSecond) + (currentSpeeds.vyMetersPerSecond * currentSpeeds.vyMetersPerSecond));
     return linearVelocity;
   }
 
   public Rotation2d getCurrentChassisHeading() {
-    ChassisSpeeds currentSpeeds = kinematics.toChassisSpeeds(this.getFLState(), this.getFRState(), this.getBLState(), this.getBRState());
+    ChassisSpeeds currentSpeeds = SwerveConstants.KINEMATICS.toChassisSpeeds(this.getFLState(), this.getFRState(), this.getBLState(), this.getBRState());
     Rotation2d robotHeading = new Rotation2d(Math.atan2(currentSpeeds.vyMetersPerSecond, currentSpeeds.vxMetersPerSecond));
     Rotation2d currentHeading = robotHeading.plus(PoseEstimator.getCurrentPose().getRotation());
     return currentHeading;
