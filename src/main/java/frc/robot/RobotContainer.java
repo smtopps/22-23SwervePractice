@@ -38,7 +38,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final PhotonCamera photonCamera = new PhotonCamera("gloworm");
-  public static double maxSpeed = 0.5;
+  public static double maxSpeed = Constants.DRIVE_SPEED;
   public static boolean fieldRelative = true;
   private final XboxController driverController = new XboxController(Constants.DRIVER_CONTROLLER);
 
@@ -78,8 +78,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     new JoystickButton(driverController, 8).whenPressed(new SetPose(poseEstimator, new Pose2d(0.0, 0.0, new Rotation2d(0.0))));
-    new JoystickButton(driverController, 6).whenHeld(new ChangeMaxSpeed(0.75));
-    new JoystickButton(driverController, 5).whenHeld(new ChangeMaxSpeed(0.25));
+    new JoystickButton(driverController, 6).whenHeld(new ChangeMaxSpeed(Constants.BOOST_SPEED));
+    new JoystickButton(driverController, 5).whenHeld(new ChangeMaxSpeed(Constants.PERCISION_SPEED));
     new JoystickButton(driverController, 3).whenPressed(new ToggleFieldRelative());
     new Button(driverController::getAButton).whenHeld(new LockDrive(swerveSubsystem));
     new JoystickButton(driverController, 4)

@@ -21,6 +21,10 @@ public final class Constants {
 
     public static final int DRIVETRAIN_PIGEON_ID = 2; // Pigeon ID
 
+    public static final double DRIVE_SPEED = 0.5;
+    public static final double BOOST_SPEED = 1.0;
+    public static final double PERCISION_SPEED = 0.25;
+
     public static final class SwerveConstants {
         public static final double TRACKWIDTH_METERS = Units.inchesToMeters(15.5);
         public static final double WHEELBASE_METERS = Units.inchesToMeters(17.5);
@@ -59,8 +63,8 @@ public final class Constants {
     }
 
     public static final class AutoConstants {
-        public static final double kPXController = 1.5;
-        public static final double kPYController = 1.5;
-        public static final double kPThetaController = 3;
+        public static final double kPXController = 3.0; //1.5
+        public static final double kPYController = 3.0; //1.5
+        public static final double kPThetaController = 3.0;
     }
 }

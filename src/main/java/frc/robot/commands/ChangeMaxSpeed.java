@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
 public class ChangeMaxSpeed extends CommandBase {
@@ -28,7 +29,7 @@ public class ChangeMaxSpeed extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.maxSpeed = 0.5;
+    RobotContainer.maxSpeed = Constants.DRIVE_SPEED;
   }
 
   // Returns true when the command should end.
