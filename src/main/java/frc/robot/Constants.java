@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -24,6 +26,56 @@ public final class Constants {
     public static final double DRIVE_SPEED = 0.5;
     public static final double BOOST_SPEED = 1.0;
     public static final double PERCISION_SPEED = 0.25;
+
+    public static final class ModuleConstants {
+
+        // Swerve Current Limiting
+        public static final int angleContinuousCurrentLimit = 25;
+        public static final int anglePeakCurrentLimit = 40;
+        public static final double anglePeakCurrentDuration = 0.1;
+        public static final boolean angleEnableCurrentLimit = true;
+
+        public static final int driveContinuousCurrentLimit = 35;
+        public static final int drivePeakCurrentLimit = 60;
+        public static final double drivePeakCurrentDuration = 0.1;
+        public static final boolean driveEnableCurrentLimit = true;
+
+        // Angle Motor PID Values
+        public static final double angleKP = 0.6;
+        public static final double angleKI = 0.0;
+        public static final double angleKD = 12.0;
+        public static final double angleKF = 0.0;
+
+        // Drive Motor PID Values
+        public static final double driveKP = 0.10;
+        public static final double driveKI = 0.0;
+        public static final double driveKD = 0.0;
+        public static final double driveKF = 0.0;
+
+        // Drive Motor Characterization Values
+        public static final double driveKS = (0.667 / 12); //divide by 12 to convert from volts to percent output for CTRE
+        public static final double driveKV = (2.44 / 12);
+        public static final double driveKA = (0.27 / 12);
+
+        public static final double openLoopRamp = 0.25;
+        public static final double closedLoopRamp = 0.0;
+
+        // Angle Encoder Invert
+        public static final boolean canCoderInvert = false;
+
+        // Motor Inverts
+        public static final boolean driveMotorInvert = false;
+        public static final boolean angleMotorInvert = false;
+
+        // Neutral Modes
+        public static final NeutralMode angleNeutralMode = NeutralMode.Coast;
+        public static final NeutralMode driveNeutralMode = NeutralMode.Brake;
+
+        public static final double wheelDiameter = Units.inchesToMeters(3.94);
+        public static final double wheelCircumference = wheelDiameter * Math.PI;
+        public static final double driveGearRatio = (((50/14)*(17/27)*(45/15)) / 1.0); //6.75:1
+        public static final double angleGearRatio = (((32/15)*(60/10)) / 1.0); //12.8:1
+    }
 
     public static final class SwerveConstants {
         public static final double TRACKWIDTH_METERS = Units.inchesToMeters(15.5);
