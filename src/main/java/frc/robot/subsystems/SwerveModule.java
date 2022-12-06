@@ -6,8 +6,11 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,7 +19,6 @@ import frc.lib.CTREModuleState;
 import frc.lib.Conversions;
 import frc.lib.SwerveModuleConstants;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.Constants.ModuleConstants;
 
 /** Add your docs here. */
@@ -83,12 +85,22 @@ public class SwerveModule {
 
     private void configAngleEncoder(){        
         angleEncoder.configFactoryDefault();
-        angleEncoder.configAllSettings(Robot.ctreConfigs.swerveCanCoderConfig);
+        //angleEncoder.configAllSettings(swerveCanCoderConfig);
+        angleEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+        angleEncoder.configSensorDirection(Constants.ModuleConstants.canCoderInvert);
+        angleEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
     }
 
     private void configAngleMotor(){
         angleMotor.configFactoryDefault();
-        angleMotor.configAllSettings(Robot.ctreConfigs.swerveAngleFXConfig);
+        //angleMotor.configAllSettings(swerveAngleFXConfig);
+        angleMotor.config_kP(0, Constants.ModuleConstants.angleKP);
+        angleMotor.config_kI(0, Constants.ModuleConstants.angleKI);
+        angleMotor.config_kD(0, Constants.ModuleConstants.angleKD);
+        angleMotor.config_kF(0, Constants.ModuleConstants.angleKF);
+        angleMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(Constants.ModuleConstants.angleEnableCurrentLimit, Constants.ModuleConstants.angleContinuousCurrentLimit, Constants.ModuleConstants.anglePeakCurrentLimit, Constants.ModuleConstants.anglePeakCurrentDuration));
+        angleMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
+
         angleMotor.setInverted(Constants.ModuleConstants.angleMotorInvert);
         angleMotor.setNeutralMode(Constants.ModuleConstants.angleNeutralMode);
         resetToAbsolute();
@@ -96,7 +108,16 @@ public class SwerveModule {
 
     private void configDriveMotor(){        
         driveMotor.configFactoryDefault();
-        driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveFXConfig);
+        //driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveFXConfig);
+        driveMotor.config_kP(0, Constants.ModuleConstants.driveKP);
+        driveMotor.config_kI(0, Constants.ModuleConstants.driveKI);
+        driveMotor.config_kD(0, Constants.ModuleConstants.driveKD);
+        driveMotor.config_kF(0, Constants.ModuleConstants.driveKF);
+        driveMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(Constants.ModuleConstants.driveEnableCurrentLimit, Constants.ModuleConstants.driveContinuousCurrentLimit, Constants.ModuleConstants.drivePeakCurrentLimit, Constants.ModuleConstants.drivePeakCurrentDuration));
+        driveMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
+        driveMotor.configOpenloopRamp(Constants.ModuleConstants.openLoopRamp);
+        driveMotor.configClosedloopRamp(Constants.ModuleConstants.closedLoopRamp);
+
         driveMotor.setInverted(Constants.ModuleConstants.driveMotorInvert);
         driveMotor.setNeutralMode(Constants.ModuleConstants.driveNeutralMode);
         driveMotor.setSelectedSensorPosition(0);
