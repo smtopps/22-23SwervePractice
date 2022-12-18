@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -17,6 +18,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -28,9 +30,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public SwerveModule[] swerveModules;
 
-  private PIDController xController;
-  private PIDController yController;
-  private PIDController thetaController;
+  private PIDController xController, yController, thetaController;
 
   /** Creates a new SwerveSubsystem. */
   public SwerveSubsystem() {
@@ -45,14 +45,20 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putString("FrontLeft", getFLState().toString());
+    SmartDashboard.putString("FrontRight", getFRState().toString());
+    SmartDashboard.putString("BackLeft", getBLState().toString());
+    SmartDashboard.putString("BackRight", getBRState().toString());
+    SmartDashboard.putNumber("Chassis Heading", getCurrentChassisHeading().getDegrees());
+    SmartDashboard.putNumber("Chassis Speed", getCurrentChassisSpeeds());
   }
 
   public void setModuleStates(SwerveModuleState[] states) {
     SwerveDriveKinematics.desaturateWheelSpeeds(states, SwerveConstants.MAX_VELOCITY_METERS_PER_SECOND);
-    swerveModules[0].setDesiredState(states[0], true);
-    swerveModules[1].setDesiredState(states[1], true);
-    swerveModules[2].setDesiredState(states[2], true);
-    swerveModules[3].setDesiredState(states[3], true);
+    swerveModules[0].setDesiredState(states[0], false);
+    swerveModules[1].setDesiredState(states[1], false);
+    swerveModules[2].setDesiredState(states[2], false);
+    swerveModules[3].setDesiredState(states[3], false);
   }
 
   public void drive(ChassisSpeeds chassisSpeeds) {
@@ -68,10 +74,10 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void lock() {
-    swerveModules[0].set(0.0, -45);
-    swerveModules[1].set(0.0, -45);
-    swerveModules[2].set(0.0, -45);
-    swerveModules[3].set(0.0, -45);
+    swerveModules[0].setDesiredStateAbs(new SwerveModuleState(0.0, Rotation2d.fromDegrees(45)), false);
+    swerveModules[1].setDesiredStateAbs(new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45)), false);
+    swerveModules[2].setDesiredStateAbs(new SwerveModuleState(0.0, Rotation2d.fromDegrees(-45)), false);
+    swerveModules[3].setDesiredStateAbs(new SwerveModuleState(0.0, Rotation2d.fromDegrees(45)), false);
   }
 
   public SwerveModuleState getFLState() {
@@ -108,8 +114,6 @@ public class SwerveSubsystem extends SubsystemBase {
     yController = new PIDController(AutoConstants.kPYController, 0, 0);
     thetaController = new PIDController(AutoConstants.kPThetaController, 0, 0); //Kp value, Ki=0, Kd=0
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-    HashMap<String, Command> eventMap = new HashMap<>();
-    eventMap.put("marker1", new PrintCommand("Passed marker 1"));
 
     PPSwerveControllerCommand swerveControllerCommand = new PPSwerveControllerCommand(
       trajectory,
@@ -119,9 +123,14 @@ public class SwerveSubsystem extends SubsystemBase {
       yController,
       thetaController,
       this::setModuleStates,
-      eventMap,
       this);
     return swerveControllerCommand.andThen(() -> stop());
+  }
+
+  public FollowPathWithEvents command(PathPlannerTrajectory trajectory) {
+    HashMap<String, Command> eventMap = new HashMap<>();
+    eventMap.put("marker1", new PrintCommand("Passed marker 1"));
+    return new FollowPathWithEvents(createCommandForTrajectory(trajectory), trajectory.getMarkers(), eventMap);
   }
 
   public double getCurrentChassisSpeeds() {

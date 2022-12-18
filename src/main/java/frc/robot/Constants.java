@@ -41,9 +41,9 @@ public final class Constants {
         public static final boolean driveEnableCurrentLimit = true;
 
         // Angle Motor PID Values
-        public static final double angleKP = 0.6;
+        public static final double angleKP = 1.0; //0.6
         public static final double angleKI = 0.0;
-        public static final double angleKD = 12.0;
+        public static final double angleKD = 12.0; //12.0
         public static final double angleKF = 0.0;
 
         // Drive Motor PID Values
@@ -68,13 +68,14 @@ public final class Constants {
         public static final boolean angleMotorInvert = false;
 
         // Neutral Modes
-        public static final NeutralMode angleNeutralMode = NeutralMode.Coast;
+        public static final NeutralMode angleNeutralMode = NeutralMode.Brake; //Coast
         public static final NeutralMode driveNeutralMode = NeutralMode.Brake;
+        public static final double angleNeutralDeadband = 0.1; // 0.06 in air
 
         public static final double wheelDiameter = Units.inchesToMeters(3.94);
         public static final double wheelCircumference = wheelDiameter * Math.PI;
-        public static final double driveGearRatio = (((50/14)*(17/27)*(45/15)) / 1.0); //6.75:1
-        public static final double angleGearRatio = (((32/15)*(60/10)) / 1.0); //12.8:1
+        public static final double driveGearRatio = (((50.0/14.0)*(17.0/27.0)*(45.0/15.0)) / 1.0); //6.75:1
+        public static final double angleGearRatio = (((32.0/15.0)*(60.0/10.0)) / 1.0); //12.8:1
     }
 
     public static final class SwerveConstants {
@@ -96,22 +97,26 @@ public final class Constants {
         public static final int FRONT_LEFT_DRIVE_MOTOR = 16; // Front left module drive motor ID
         public static final int FRONT_LEFT_STEER_MOTOR = 17; // Front left module steer motor ID
         public static final int FRONT_LEFT_STEER_ENCODER = 18; // Front left steer encoder ID
-        public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(175.51); // Front left steer offset
+        //public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(175.51); // Front left steer offset
+        public static final double FRONT_LEFT_STEER_OFFSET = -3.69; // Front left steer offset
 
         public static final int FRONT_RIGHT_DRIVE_MOTOR = 10; // Front right drive motor ID
         public static final int FRONT_RIGHT_STEER_MOTOR = 11; // Front right steer motor ID
         public static final int FRONT_RIGHT_STEER_ENCODER =12; // Front right steer encoder ID
-        public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(94.83); // Front right steer offset
+        //public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(94.83); // Front right steer offset
+        public static final double FRONT_RIGHT_STEER_OFFSET = 94.66+180; // Front right steer offset
 
         public static final int BACK_LEFT_DRIVE_MOTOR = 19; // Back left drive motor ID
         public static final int BACK_LEFT_STEER_MOTOR = 20; // Back left steer motor ID
         public static final int BACK_LEFT_STEER_ENCODER = 21; // Back left steer encoder ID
-        public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(219.11); // Back left steer offset
+        //public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(219.11); // Back left steer offset
+        public static final double BACK_LEFT_STEER_OFFSET = 38.95; // Back left steer offset
 
         public static final int BACK_RIGHT_DRIVE_MOTOR = 14; // Back right drive motor ID
         public static final int BACK_RIGHT_STEER_MOTOR = 13; // Back right steer motor ID
         public static final int BACK_RIGHT_STEER_ENCODER = 15; // Back right steer encoder ID
-        public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(338.28); // Back right steer offset
+        //public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(338.28); // Back right steer offset
+        public static final double BACK_RIGHT_STEER_OFFSET = -21.88+180; // Back right steer offset
     }
 
     public static final class AutoConstants {

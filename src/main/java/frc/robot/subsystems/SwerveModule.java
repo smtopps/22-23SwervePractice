@@ -68,9 +68,20 @@ public class SwerveModule {
         lastAngle = angle;
     }
 
-    public void set(double speed, double rotation) {
-        driveMotor.set(ControlMode.PercentOutput, speed);
-        angleMotor.set(ControlMode.Position, Conversions.degreesToFalcon(rotation, Constants.ModuleConstants.angleGearRatio));
+    public void setDesiredStateAbs(SwerveModuleState desiredState, boolean isOpenLoop) {
+        desiredState = CTREModuleState.optimize(desiredState, getState().angle);
+        
+        if(isOpenLoop){
+            double percentOutput = desiredState.speedMetersPerSecond / Constants.SwerveConstants.MAX_VELOCITY_METERS_PER_SECOND;
+            driveMotor.set(ControlMode.PercentOutput, percentOutput);
+        }
+        else {
+            double velocity = Conversions.MPSToFalcon(desiredState.speedMetersPerSecond, Constants.ModuleConstants.wheelCircumference, Constants.ModuleConstants.driveGearRatio);
+            driveMotor.set(ControlMode.Velocity, velocity, DemandType.ArbitraryFeedForward, feedforward.calculate(desiredState.speedMetersPerSecond));
+        }
+
+        angleMotor.set(ControlMode.Position, Conversions.degreesToFalcon(desiredState.angle.getDegrees(), Constants.ModuleConstants.angleGearRatio)); 
+        lastAngle = desiredState.angle.getDegrees();
     }
 
     public void stop() {
@@ -100,6 +111,7 @@ public class SwerveModule {
         angleMotor.config_kF(0, Constants.ModuleConstants.angleKF);
         angleMotor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(Constants.ModuleConstants.angleEnableCurrentLimit, Constants.ModuleConstants.angleContinuousCurrentLimit, Constants.ModuleConstants.anglePeakCurrentLimit, Constants.ModuleConstants.anglePeakCurrentDuration));
         angleMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
+        angleMotor.configNeutralDeadband(Constants.ModuleConstants.angleNeutralDeadband);
 
         angleMotor.setInverted(Constants.ModuleConstants.angleMotorInvert);
         angleMotor.setNeutralMode(Constants.ModuleConstants.angleNeutralMode);

@@ -90,7 +90,7 @@ public class PoseEstimator extends SubsystemBase {
         Pose3d camPose = targetPose.transformBy(camToTargetTrans.inverse());
         Pose3d robotPose = camPose.transformBy(cameraToRobot);
         poseEstimator.addVisionMeasurement(robotPose.toPose2d(), imageCaptureTime);
-        SmartDashboard.putString("Pose3d", robotPose.toString());
+        //SmartDashboard.putString("Pose3d", robotPose.toString());
       }
     }
 
@@ -101,6 +101,10 @@ public class PoseEstimator extends SubsystemBase {
   }
 
   public static Pose2d getCurrentPose() {
+    return poseEstimator.getEstimatedPosition();
+  }
+
+  public Pose2d getPose() {
     return poseEstimator.getEstimatedPosition();
   }
 
