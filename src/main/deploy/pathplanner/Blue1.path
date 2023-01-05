@@ -95,15 +95,18 @@
       }
     }
   ],
+  "maxVelocity": 2.0,
+  "maxAcceleration": 2.0,
+  "isReversed": null,
   "markers": [
     {
-      "position": 0.5381818181818168,
+      "position": 0.5,
       "names": [
         "marker1"
       ]
     },
     {
-      "position": 1.4290909090909236,
+      "position": 1.5,
       "names": [
         "marker2"
       ]

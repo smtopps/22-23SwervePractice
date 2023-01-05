@@ -13,7 +13,8 @@ import frc.robot.Constants;
 
 public class Pigeon2Subsystem extends SubsystemBase {
   /** Creates a new PigeonSubsystemTwo. */
-  private final Pigeon2 pigeon2 = new Pigeon2(Constants.DRIVETRAIN_PIGEON_ID);
+  private final Pigeon2 pigeon2 = new Pigeon2(Constants.DRIVETRAIN_PIGEON_ID, "canivore");
+  //private final Pigeon2 pigeon2 = new Pigeon2(Constants.DRIVETRAIN_PIGEON_ID);
   
   public Pigeon2Subsystem() {
     pigeon2.configMountPose(AxisDirection.PositiveY, AxisDirection.PositiveZ);
@@ -36,3 +37,4 @@ public class Pigeon2Subsystem extends SubsystemBase {
     return Rotation2d.fromDegrees(pigeon2.getYaw());
   }
 }
+

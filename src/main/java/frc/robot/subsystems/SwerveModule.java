@@ -37,15 +37,18 @@ public class SwerveModule {
         angleOffset = moduleConstants.angleOffset;
 
         /* Angle Encoder Config */
-        angleEncoder = new CANCoder(moduleConstants.cancoderID);
+        angleEncoder = new CANCoder(moduleConstants.cancoderID, "canivore");
+        //angleEncoder = new CANCoder(moduleConstants.cancoderID);
         configAngleEncoder();
 
         /* Angle Motor Config */
-        angleMotor = new TalonFX(moduleConstants.angleMotorID);
+        angleMotor = new TalonFX(moduleConstants.angleMotorID, "canivore");
+        //angleMotor = new TalonFX(moduleConstants.angleMotorID);
         configAngleMotor();
 
         /* Drive Motor Config */
-        driveMotor = new TalonFX(moduleConstants.driveMotorID);
+        driveMotor = new TalonFX(moduleConstants.driveMotorID, "canivore");
+        //driveMotor = new TalonFX(moduleConstants.driveMotorID);
         configDriveMotor();
 
         lastAngle = getState().angle.getDegrees();
@@ -96,7 +99,6 @@ public class SwerveModule {
 
     private void configAngleEncoder(){        
         angleEncoder.configFactoryDefault();
-        //angleEncoder.configAllSettings(swerveCanCoderConfig);
         angleEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
         angleEncoder.configSensorDirection(Constants.ModuleConstants.canCoderInvert);
         angleEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
@@ -104,7 +106,6 @@ public class SwerveModule {
 
     private void configAngleMotor(){
         angleMotor.configFactoryDefault();
-        //angleMotor.configAllSettings(swerveAngleFXConfig);
         angleMotor.config_kP(0, Constants.ModuleConstants.angleKP);
         angleMotor.config_kI(0, Constants.ModuleConstants.angleKI);
         angleMotor.config_kD(0, Constants.ModuleConstants.angleKD);
@@ -120,7 +121,6 @@ public class SwerveModule {
 
     private void configDriveMotor(){        
         driveMotor.configFactoryDefault();
-        //driveMotor.configAllSettings(Robot.ctreConfigs.swerveDriveFXConfig);
         driveMotor.config_kP(0, Constants.ModuleConstants.driveKP);
         driveMotor.config_kI(0, Constants.ModuleConstants.driveKI);
         driveMotor.config_kD(0, Constants.ModuleConstants.driveKD);

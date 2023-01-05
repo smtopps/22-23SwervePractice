@@ -22,6 +22,7 @@ public final class Constants {
     public static final int DRIVER_CONTROLLER = 0;
 
     public static final int DRIVETRAIN_PIGEON_ID = 2; // Pigeon ID
+    public static final int CANDLE_ID = 3;
 
     public static final double DRIVE_SPEED = 0.5;
     public static final double BOOST_SPEED = 1.0;
@@ -89,33 +90,29 @@ public final class Constants {
         public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND / Math.hypot(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0);
 
         public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
-            new Translation2d(SwerveConstants.TRACKWIDTH_METERS / 2.0, SwerveConstants.WHEELBASE_METERS / 2.0), // Front Left
-            new Translation2d(SwerveConstants.TRACKWIDTH_METERS / 2.0, -SwerveConstants.WHEELBASE_METERS / 2.0), // Front Right
-            new Translation2d(-SwerveConstants.TRACKWIDTH_METERS / 2.0, SwerveConstants.WHEELBASE_METERS / 2.0), // Back Left
-            new Translation2d(-SwerveConstants.TRACKWIDTH_METERS / 2.0, -SwerveConstants.WHEELBASE_METERS / 2.0)); // Back Right
+            new Translation2d(TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0), // Front Left
+            new Translation2d(TRACKWIDTH_METERS / 2.0, -WHEELBASE_METERS / 2.0), // Front Right
+            new Translation2d(-TRACKWIDTH_METERS / 2.0, WHEELBASE_METERS / 2.0), // Back Left
+            new Translation2d(-TRACKWIDTH_METERS / 2.0, -WHEELBASE_METERS / 2.0)); // Back Right
 
         public static final int FRONT_LEFT_DRIVE_MOTOR = 16; // Front left module drive motor ID
         public static final int FRONT_LEFT_STEER_MOTOR = 17; // Front left module steer motor ID
         public static final int FRONT_LEFT_STEER_ENCODER = 18; // Front left steer encoder ID
-        //public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(175.51); // Front left steer offset
         public static final double FRONT_LEFT_STEER_OFFSET = -3.69; // Front left steer offset
 
         public static final int FRONT_RIGHT_DRIVE_MOTOR = 10; // Front right drive motor ID
         public static final int FRONT_RIGHT_STEER_MOTOR = 11; // Front right steer motor ID
         public static final int FRONT_RIGHT_STEER_ENCODER =12; // Front right steer encoder ID
-        //public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(94.83); // Front right steer offset
         public static final double FRONT_RIGHT_STEER_OFFSET = 94.66+180; // Front right steer offset
 
         public static final int BACK_LEFT_DRIVE_MOTOR = 19; // Back left drive motor ID
         public static final int BACK_LEFT_STEER_MOTOR = 20; // Back left steer motor ID
         public static final int BACK_LEFT_STEER_ENCODER = 21; // Back left steer encoder ID
-        //public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(219.11); // Back left steer offset
         public static final double BACK_LEFT_STEER_OFFSET = 38.95; // Back left steer offset
 
         public static final int BACK_RIGHT_DRIVE_MOTOR = 14; // Back right drive motor ID
         public static final int BACK_RIGHT_STEER_MOTOR = 13; // Back right steer motor ID
         public static final int BACK_RIGHT_STEER_ENCODER = 15; // Back right steer encoder ID
-        //public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(338.28); // Back right steer offset
         public static final double BACK_RIGHT_STEER_OFFSET = -21.88+180; // Back right steer offset
     }
 

@@ -1,6 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
 
@@ -33,6 +30,7 @@ import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.LockDrive;
 import frc.robot.commands.ToggleFieldRelative;
 import frc.robot.commands.SetPose;
+import frc.robot.subsystems.CANdleSubsystem;
 import frc.robot.subsystems.Pigeon2Subsystem;
 import frc.robot.subsystems.PoseEstimator;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -53,24 +51,7 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final Pigeon2Subsystem pigeon2Subsystem = new Pigeon2Subsystem();
   private final PoseEstimator poseEstimator = new PoseEstimator(photonCamera, swerveSubsystem, pigeon2Subsystem);
-
-  // This is just an example event map. It would be better to have a constant, global event map
-  // in your code that can be used repeatedly.
-  HashMap<String, Command> eventMap = new HashMap<>();
-
-  // Create the AutoBuilder. This only needs to be created once when robot code starts, 
-  // not every time you want to create an auto command. A good place to put this is 
-  // in RobotContainer along with your subsystems.
-  SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-    poseEstimator::getPose, // Pose2d supplier
-    poseEstimator::setPose, // Pose2d consumer, used to reset odometry at the beginning of auto
-    Constants.SwerveConstants.KINEMATICS, // SwerveDriveKinematics
-    new PIDConstants(Constants.AutoConstants.kPXController, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
-    new PIDConstants(Constants.AutoConstants.kPThetaController, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
-    swerveSubsystem::setModuleStates, // Module states consumer used to output to the drive subsystem
-    eventMap,
-    swerveSubsystem // The drive subsystem. Used to properly set the requirements of path following commands
-  );
+  private final CANdleSubsystem candleSubsystem = new CANdleSubsystem();
 
   //Auto Stuff
   private final TestPath testPath = new TestPath(swerveSubsystem, poseEstimator);
@@ -82,9 +63,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    eventMap.put("marker1", new PrintCommand("1"));
-    eventMap.put("marker2", new PrintCommand("2"));
-
     swerveSubsystem.setDefaultCommand(new DriveWithJoysticks(
       swerveSubsystem,
       poseEstimator,
@@ -115,10 +93,11 @@ public class RobotContainer {
     new JoystickButton(driverController, 3).whenPressed(new ToggleFieldRelative());
     new Button(driverController::getAButton).whenHeld(new LockDrive(swerveSubsystem));
     new JoystickButton(driverController, 4)
-      .whenActive(new DriveToLoadingStation(swerveSubsystem, poseEstimator))
+      .whenActive(new DriveToLoadingStation(swerveSubsystem, poseEstimator, candleSubsystem))
       .whenInactive(new InstantCommand(() -> {
         if(swerveSubsystem.getCurrentCommand() != null){
           swerveSubsystem.getCurrentCommand().cancel();
+          candleSubsystem.setDefult();
         }
       }));
   }
@@ -130,6 +109,23 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
+
+    // Create the HashMap to run Commands for Auto.
+    HashMap<String, Command> eventMap = new HashMap<>();
+    eventMap.put("marker1", new PrintCommand("1"));
+    eventMap.put("marker2", new PrintCommand("2"));
+
+    // Create the AutoBuilder.
+    SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+      poseEstimator::getPose, // Pose2d supplier
+      poseEstimator::setPose, // Pose2d consumer, used to reset odometry at the beginning of auto
+      Constants.SwerveConstants.KINEMATICS, // SwerveDriveKinematics
+      new PIDConstants(Constants.AutoConstants.kPXController, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
+      new PIDConstants(Constants.AutoConstants.kPThetaController, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
+      swerveSubsystem::setModuleStates, // Module states consumer used to output to the drive subsystem
+      eventMap,
+      swerveSubsystem // The drive subsystem. Used to properly set the requirements of path following commands
+    );
 
     ArrayList<PathPlannerTrajectory> trajectories;
     if(chooser.getSelected() == "Blue1") {
